@@ -1,0 +1,48 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# IDEs
+.idea/
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# VSCode (keep shared config if needed)
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+########################################
+# BACKEND (NestJS / Node / Prisma)
+########################################
+
+back-app-gta/node_modules/
+back-app-gta/dist/
+back-app-gta/build/
+back-app-gta/coverage/
+back-app-gta/.nyc_output/
+back-app-gta/generated/prisma/
+back-app-gta/.env
+back-app-gta/.env.*
+
+########################################
+# FRONTEND (Angular)
+########################################
+
+front-app-gta/node_modules/
+front-app-gta/dist/
+front-app-gta/out-tsc/
+front-app-gta/tmp/
+front-app-gta/coverage/
+front-app-gta/.angular/cache/
+front-app-gta/.env
+front-app-gta/.env.*
+
+# Angular environment files
+front-app-gta/src/environments/environment*.ts

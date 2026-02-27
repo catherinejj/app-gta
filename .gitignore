@@ -46,3 +46,5 @@ front-app-gta/.env.*
 
 # Angular environment files
 front-app-gta/src/environments/environment*.ts
+
+sauvegardes-diverses/*

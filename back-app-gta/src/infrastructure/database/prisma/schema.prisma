@@ -16,8 +16,25 @@ enum Role {
 }
 
 model User {
-  id       String @id @default(cuid())
-  email    String @unique
-  password String
-  role     Role   @default(USER)
+  id             String   @id @default(cuid())
+  firstName      String   @default("prenom")
+  lastName       String   @default("nom")
+  birthDate      DateTime
+  employeeNumber String   @default("123")
+  rqth           Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  auth           Auth?
+}
+
+model Auth {
+  id               String   @id @default(cuid())
+  email            String   @unique
+  password         String
+  role             Role     @default(USER)
+  lastLoginAt      DateTime?
+  lastLogoutAt     DateTime?
+  refreshTokenHash String?
+  userId           String   @unique
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

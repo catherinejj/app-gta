@@ -1,7 +1,6 @@
 # Changelog – Frontend
 
-## [0.1.0] - 27/02/2026
-### Ajouté
+## [0.1.0] - 15/02/2026
+
+### Ajout
 - Initialisation du projet Angular
-- Configuration de routage de base
-- Structure du service d'authentification

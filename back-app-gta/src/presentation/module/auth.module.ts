@@ -9,6 +9,7 @@ import { GetUserByIdUseCase } from '../../application/use-cases/GetUserById/GetU
 import { ListUsersUseCase } from '../../application/use-cases/ListUsers/ListUsersUseCase';
 import { LoginUseCase } from '../../application/use-cases/Login/LoginUseCase';
 import { LogoutUseCase } from '../../application/use-cases/Logout/LogoutUseCase';
+import { DeleteUserUseCase } from '../../application/use-cases/DeleteUser/DeleteUserUseCase';
 import { RefreshTokenUseCase } from '../../application/use-cases/RefreshToken/RefreshTokenUseCase';
 import { RegisterUseCase } from '../../application/use-cases/Register/RegisterUseCase';
 import { SearchUsersByEmailUseCase } from '../../application/use-cases/SearchUsersByEmail/SearchUsersByEmailUseCase';
@@ -99,6 +100,12 @@ import { UsersController } from '../controller/users.controller';
         new UpdateUserRqthUseCase(repo, tokenService),
       inject: [AUTH_USER_REPOSITORY, TOKEN_SERVICE],
     },
+    {
+      provide: DeleteUserUseCase,
+      useFactory: (repo, tokenService) =>
+        new DeleteUserUseCase(repo, tokenService),
+      inject: [AUTH_USER_REPOSITORY, TOKEN_SERVICE],
+    },
   ],
   exports: [
     RegisterUseCase,
@@ -113,6 +120,7 @@ import { UsersController } from '../controller/users.controller';
     SearchUsersByLastNameUseCase,
     UpdateUserRoleUseCase,
     UpdateUserRqthUseCase,
+    DeleteUserUseCase,
   ],
 })
 export class AuthModule {}

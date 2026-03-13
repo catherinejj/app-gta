@@ -7,4 +7,5 @@ export interface AuthUserRepository {
   findByFirstName(firstName: string): Promise<AuthUser[]>;
   findByLastName(lastName: string): Promise<AuthUser[]>;
   save(user: AuthUser): Promise<AuthUser>;
+  delete(id: string): Promise<void>;
 }

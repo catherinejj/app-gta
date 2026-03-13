@@ -1,5 +1,6 @@
+//TODO peut-être mélanger l'enum Requestatus et AprovalAction car c'est quasiment pareil
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
   binaryTargets = ["native"]
 }
 
@@ -8,6 +9,8 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// ENUMS
+
 enum Role {
   ADMIN
   USER
@@ -15,16 +18,84 @@ enum Role {
   RH
 }
 
+enum ContractType {
+  CDI
+  CDD
+  ALTERNANCE
+  STAGE
+  INTERIM
+  FREELANCE
+}
+
+enum ContractStatus {
+  ACTIVE
+  SUSPENDED
+  ENDED
+}
+
+enum RequestCategory {
+  PAID_LEAVE
+  UNPAID_LEAVE
+  RTT
+  SICK_LEAVE
+  REMOTE_WORK
+  SPECIAL_LEAVE
+  OTHER
+}
+
+enum RequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  CANCELED
+}
+
+enum ApprovalAction {
+  SUBMITTED
+  APPROVED
+  REJECTED
+  CANCELED
+}
+
+enum DayPart {
+  MORNING
+  AFTERNOON
+  FULL_DAY
+}
+
+enum EligibilityOperator {
+  AND
+  OR
+}
+
+// MODELS
+
 model User {
-  id             String   @id @default(cuid())
-  firstName      String   @default("prenom")
-  lastName       String   @default("nom")
-  birthDate      DateTime
-  employeeNumber String   @default("123")
-  rqth           Boolean  @default(false)
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-  auth           Auth?
+  id              String   @id @default(cuid())
+  firstName       String   @default("prenom")
+  lastName        String   @default("nom")
+  birthDate       DateTime
+  employeeNumber  String   @unique
+  rqth            Boolean  @default(false)
+  isActive        Boolean  @default(true)
+
+  departmentId    String?
+  managerId       String?
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  auth            Auth?
+  department      Department?       @relation(fields: [departmentId], references: [id], onDelete: SetNull)
+
+  manager         User?             @relation("UserManager", fields: [managerId], references: [id], onDelete: SetNull)
+  teamMembers     User[]            @relation("UserManager")
+
+  contracts       Contract[]
+  leaveRequests   LeaveRequest[]
+  leaveBalances   LeaveBalance[]
+  approvalActions ApprovalHistory[] @relation("ApprovalActor")
 }
 
 model Auth {
@@ -35,6 +106,223 @@ model Auth {
   lastLoginAt      DateTime?
   lastLogoutAt     DateTime?
   refreshTokenHash String?
+
   userId           String   @unique
   user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Department {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  users       User[]
+  rules       RequestTypeEligibilityRule[]
+
+  @@index([isActive])
+}
+
+model Contract {
+  id                      String         @id @default(cuid())
+  userId                  String
+  contractType            ContractType
+  status                  ContractStatus @default(ACTIVE)
+
+  startDate               DateTime
+  endDate                 DateTime?
+
+  jobTitle                String?
+  workingRate             Float          @default(100)
+  teleworkEligible        Boolean        @default(false)
+
+  annualLeaveEntitlement  Float          @default(25)
+  rttEntitlement          Float          @default(0)
+
+  createdAt               DateTime       @default(now())
+  updatedAt               DateTime       @updatedAt
+
+  user                    User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([contractType])
+  @@index([status])
+  @@index([startDate, endDate])
+}
+
+model RequestType {
+  id                          String                        @id @default(cuid())
+  code                        String                        @unique
+  label                       String
+  description                 String?
+
+  category                    RequestCategory
+
+  parentId                    String?
+  parent                      RequestType?                  @relation("RequestTypeHierarchy", fields: [parentId], references: [id], onDelete: SetNull)
+  children                    RequestType[]                 @relation("RequestTypeHierarchy")
+
+  requiresApproval            Boolean                       @default(true)
+  requiresBalance             Boolean                       @default(true)
+  requiresDocument            Boolean                       @default(false)
+
+  rqthOnly                    Boolean                       @default(false)
+  requiresTeleworkEligibility Boolean                       @default(false)
+
+  // UI / calendrier
+  color                       String?                       
+  icon                        String?                       
+  displayOrder                Int                           @default(0)
+
+  isActive                    Boolean                       @default(true)
+
+  createdAt                   DateTime                      @default(now())
+  updatedAt                   DateTime                      @updatedAt
+
+  leaveRequests               LeaveRequest[]
+  leaveBalances               LeaveBalance[]
+  eligibilityRules            RequestTypeEligibilityRule[]
+  requestTypeTags             RequestTypeTag[]
+
+  @@index([category])
+  @@index([isActive])
+  @@index([parentId])
+  @@index([displayOrder])
+}
+
+model RequestTag {
+  id              String           @id @default(cuid())
+  code            String           @unique
+  label           String
+  color           String?          
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  requestTypeTags RequestTypeTag[]
+}
+
+model RequestTypeTag {
+  requestTypeId String
+  tagId         String
+
+  requestType   RequestType @relation(fields: [requestTypeId], references: [id], onDelete: Cascade)
+  tag           RequestTag  @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([requestTypeId, tagId])
+  @@index([tagId])
+}
+
+model RequestTypeEligibilityRule {
+  id                     String              @id @default(cuid())
+  requestTypeId          String
+
+  // logique de combinaison si plusieurs règles existent
+  operator               EligibilityOperator @default(OR)
+
+  // critères d’éligibilité
+  contractType           ContractType?
+  rqthRequired           Boolean?
+  teleworkEligibleOnly   Boolean?
+
+  minSeniorityMonths     Int?                // ex: 24 = 2 ans d'ancienneté
+  maxSeniorityMonths     Int?
+
+  minWorkingRate         Float?              // ex: 50, 80, 100
+  maxWorkingRate         Float?
+
+  departmentId           String?
+
+  isActive               Boolean             @default(true)
+  createdAt              DateTime            @default(now())
+  updatedAt              DateTime            @updatedAt
+
+  requestType            RequestType         @relation(fields: [requestTypeId], references: [id], onDelete: Cascade)
+  department             Department?         @relation(fields: [departmentId], references: [id], onDelete: SetNull)
+
+  @@index([requestTypeId])
+  @@index([contractType])
+  @@index([departmentId])
+  @@index([isActive])
+}
+
+model LeaveRequest {
+  id               String         @id @default(cuid())
+  userId           String
+  requestTypeId    String
+
+  startDate        DateTime
+  endDate          DateTime
+  startPart        DayPart        @default(FULL_DAY)
+  endPart          DayPart        @default(FULL_DAY)
+
+  durationDays     Float          @default(0)
+
+  reason           String?
+  status           RequestStatus  @default(PENDING)
+  documentPath     String?
+
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+
+  user             User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  requestType      RequestType    @relation(fields: [requestTypeId], references: [id], onDelete: Restrict)
+
+  approvalHistory  ApprovalHistory[]
+
+  @@index([userId])
+  @@index([requestTypeId])
+  @@index([status])
+  @@index([startDate, endDate])
+}
+
+model ApprovalHistory {
+  id             String         @id @default(cuid())
+  leaveRequestId String
+  actorId        String
+  action         ApprovalAction
+  comment        String?
+  createdAt      DateTime       @default(now())
+
+  leaveRequest   LeaveRequest   @relation(fields: [leaveRequestId], references: [id], onDelete: Cascade)
+  actor          User           @relation("ApprovalActor", fields: [actorId], references: [id], onDelete: Restrict)
+
+  @@index([leaveRequestId])
+  @@index([actorId])
+  @@index([action])
+}
+
+model LeaveBalance {
+  id             String       @id @default(cuid())
+  userId         String
+  requestTypeId  String
+  year           Int
+
+  acquiredDays   Float        @default(0)
+  usedDays       Float        @default(0)
+  pendingDays    Float        @default(0)
+
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  requestType    RequestType  @relation(fields: [requestTypeId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, requestTypeId, year])
+  @@index([userId])
+  @@index([requestTypeId])
+  @@index([year])
+}
+
+model PublicHoliday {
+  id          String   @id @default(cuid())
+  date        DateTime
+  label       String
+  region      String?
+  isRecurring Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  @@index([date])
+  @@unique([date, region])
 }

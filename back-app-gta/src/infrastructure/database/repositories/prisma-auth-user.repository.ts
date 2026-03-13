@@ -138,6 +138,12 @@ export class PrismaAuthUserRepository implements AuthUserRepository {
     return this.toDomain(created);
   }
 
+  async delete(id: string): Promise<void> {
+    await (this.prisma.user as any).delete({
+      where: { id },
+    });
+  }
+
   private toDomain(record: {
     email: string;
     password: string;

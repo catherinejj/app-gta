@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Headers,
   HttpException,
@@ -14,6 +15,7 @@ import { ListUsersUseCase } from '../../application/use-cases/ListUsers/ListUser
 import { SearchUsersByEmailUseCase } from '../../application/use-cases/SearchUsersByEmail/SearchUsersByEmailUseCase';
 import { SearchUsersByFirstNameUseCase } from '../../application/use-cases/SearchUsersByFirstName/SearchUsersByFirstNameUseCase';
 import { SearchUsersByLastNameUseCase } from '../../application/use-cases/SearchUsersByLastName/SearchUsersByLastNameUseCase';
+import { DeleteUserUseCase } from '../../application/use-cases/DeleteUser/DeleteUserUseCase';
 import { UpdateUserRqthUseCase } from '../../application/use-cases/UpdateUserRqth/UpdateUserRqthUseCase';
 import { UpdateUserRoleUseCase } from '../../application/use-cases/UpdateUserRole/UpdateUserRoleUseCase';
 import { UpdateUserRqthDto } from '../dto/update-user-rqth.dto';
@@ -28,6 +30,7 @@ export class UsersController {
     private readonly searchUsersByEmailUseCase: SearchUsersByEmailUseCase,
     private readonly searchUsersByFirstNameUseCase: SearchUsersByFirstNameUseCase,
     private readonly searchUsersByLastNameUseCase: SearchUsersByLastNameUseCase,
+    private readonly deleteUserUseCase: DeleteUserUseCase,
     private readonly updateUserRqthUseCase: UpdateUserRqthUseCase,
     private readonly updateUserRoleUseCase: UpdateUserRoleUseCase,
   ) {}
@@ -131,6 +134,19 @@ export class UsersController {
         userId: id,
         rqth: dto.rqth,
       });
+    } catch (error) {
+      throw this.mapError(error);
+    }
+  }
+
+  @Delete(':id')
+  async delete(
+    @Headers('authorization') authorization: string | undefined,
+    @Param('id') id: string,
+  ) {
+    try {
+      const accessToken = this.extractBearerToken(authorization);
+      await this.deleteUserUseCase.execute({ accessToken, userId: id });
     } catch (error) {
       throw this.mapError(error);
     }

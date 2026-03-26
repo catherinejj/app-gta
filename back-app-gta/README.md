@@ -49,7 +49,7 @@ src/
 ## Technologies
 
 NestJS 
-- ypeScript
+- TypeScript
 - Base de données relationnelle
 - JWT pour l’authentification
 

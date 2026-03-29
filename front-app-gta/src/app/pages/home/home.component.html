@@ -1,5 +1,10 @@
 <section class="home-page">
   <div class="home-card" *ngIf="currentUser$ | async as user">
+    <header class="home-header">
+      <p class="session-badge">{{ user.email }}:{{ user.role }}</p>
+      <button type="button" (click)="logout()">Se deconnecter</button>
+    </header>
+
     <p class="eyebrow">Espace prive</p>
     <h1>Bienvenue {{ user.firstName }} {{ user.lastName }}</h1>
     <p class="subtitle">
@@ -20,7 +25,5 @@
         <dd>{{ user.lastLoginAt || 'Premiere connexion' }}</dd>
       </div>
     </dl>
-
-    <button type="button" (click)="logout()">Se deconnecter</button>
   </div>
 </section>

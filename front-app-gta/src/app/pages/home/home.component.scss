@@ -21,6 +21,26 @@
   box-shadow: 0 20px 60px rgba(26, 62, 51, 0.12);
 }
 
+.home-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.session-badge {
+  margin: 0;
+  padding: 0.6rem 0.9rem;
+  border-radius: 999px;
+  background: #14392d;
+  color: #f4fbf8;
+  font-size: 0.92rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  word-break: break-word;
+}
+
 .eyebrow {
   margin: 0 0 0.5rem;
   text-transform: uppercase;
@@ -75,4 +95,15 @@ button {
   color: #fff;
   font: inherit;
   cursor: pointer;
+}
+
+@media (max-width: 640px) {
+  .home-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .session-badge {
+    text-align: center;
+  }
 }

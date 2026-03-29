@@ -1,0 +1,53 @@
+<section class="login-page">
+  <div class="hero-panel">
+    <p class="eyebrow">Gestion GTA</p>
+    <h1>Connectez-vous pour acceder a votre espace.</h1>
+    <p class="description">
+      Utilisez votre adresse e-mail professionnelle et votre mot de passe pour
+      retrouver vos informations RH.
+    </p>
+  </div>
+
+  <div class="form-panel">
+    <form class="login-form" [formGroup]="loginForm" (ngSubmit)="submit()">
+      <div class="form-header">
+        <p class="eyebrow">Connexion</p>
+        <h2>Bienvenue</h2>
+      </div>
+
+      <label class="field">
+        <span>Adresse e-mail</span>
+        <input
+          type="email"
+          formControlName="email"
+          placeholder="prenom.nom@entreprise.fr"
+          [ngClass]="{ invalid: showEmailError() }"
+        />
+        <small *ngIf="showEmailError()">
+          {{
+            loginForm.controls.email.hasError('required')
+              ? 'L adresse e-mail est requise.'
+              : 'Le format de l adresse e-mail est invalide.'
+          }}
+        </small>
+      </label>
+
+      <label class="field">
+        <span>Mot de passe</span>
+        <input
+          type="password"
+          formControlName="password"
+          placeholder="Votre mot de passe"
+          [ngClass]="{ invalid: showPasswordError() }"
+        />
+        <small *ngIf="showPasswordError()">Le mot de passe est requis.</small>
+      </label>
+
+      <p class="error-banner" *ngIf="errorMessage()">{{ errorMessage() }}</p>
+
+      <button type="submit" [disabled]="isSubmitting()">
+        {{ isSubmitting() ? 'Connexion...' : 'Se connecter' }}
+      </button>
+    </form>
+  </div>
+</section>

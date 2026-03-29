@@ -1,0 +1,26 @@
+<section class="home-page">
+  <div class="home-card" *ngIf="currentUser$ | async as user">
+    <p class="eyebrow">Espace prive</p>
+    <h1>Bienvenue {{ user.firstName }} {{ user.lastName }}</h1>
+    <p class="subtitle">
+      Vous etes connecte avec le role <strong>{{ user.role }}</strong>.
+    </p>
+
+    <dl class="details">
+      <div>
+        <dt>Email</dt>
+        <dd>{{ user.email }}</dd>
+      </div>
+      <div>
+        <dt>Matricule</dt>
+        <dd>{{ user.employeeNumber }}</dd>
+      </div>
+      <div>
+        <dt>Derniere connexion</dt>
+        <dd>{{ user.lastLoginAt || 'Premiere connexion' }}</dd>
+      </div>
+    </dl>
+
+    <button type="button" (click)="logout()">Se deconnecter</button>
+  </div>
+</section>

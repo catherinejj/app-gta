@@ -1,0 +1,78 @@
+:host {
+  display: block;
+}
+
+.home-page {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 2rem;
+  background:
+    radial-gradient(circle at top, rgba(133, 215, 190, 0.35), transparent 30%),
+    linear-gradient(160deg, #f5efe4 0%, #f1f5f0 48%, #dfece8 100%);
+}
+
+.home-card {
+  width: min(100%, 720px);
+  padding: 2rem;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid rgba(19, 58, 45, 0.12);
+  box-shadow: 0 20px 60px rgba(26, 62, 51, 0.12);
+}
+
+.eyebrow {
+  margin: 0 0 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 0.72rem;
+  color: #426556;
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(2rem, 4vw, 3rem);
+  line-height: 1;
+  color: #14392d;
+}
+
+.subtitle {
+  margin: 1rem 0 0;
+  color: #4c6258;
+  font-size: 1rem;
+}
+
+.details {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+  margin: 2rem 0;
+}
+
+.details div {
+  padding: 1rem;
+  border-radius: 16px;
+  background: #f6faf8;
+}
+
+dt {
+  margin-bottom: 0.35rem;
+  color: #5f786d;
+  font-size: 0.8rem;
+}
+
+dd {
+  margin: 0;
+  color: #173e31;
+  font-weight: 600;
+}
+
+button {
+  border: 0;
+  border-radius: 999px;
+  padding: 0.9rem 1.3rem;
+  background: #14392d;
+  color: #fff;
+  font: inherit;
+  cursor: pointer;
+}

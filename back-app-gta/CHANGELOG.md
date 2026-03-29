@@ -1,5 +1,27 @@
 # Changelog – Backend
 
+## [0.3.0] - 2026-03-21
+
+### Ajout
+- Implémentation des opérations CRUD minimales pour les entités principales du domaine RH (#13)
+  - User
+  - Department
+  - Contract
+  - RequestType
+  - LeaveRequest
+  - LeaveBalance
+  - ApprovalHistory
+
+- Extension du modèle Prisma pour la gestion avancée des demandes RH (#14)
+  - Hiérarchie des types de demandes (parent/enfant)
+  - Système de tags pour les types de demandes
+  - Règles d’éligibilité avancées (contrat, RQTH, télétravail, ancienneté, quotité, département)
+  - Ajout de métadonnées UI (couleur, icône, ordre d’affichage)
+
+### Modifié
+- Amélioration de la structure du modèle métier pour anticiper les besoins RH complexes
+- Préparation du backend pour l’intégration avec l’interface front-end Angular
+
 ## [0.2.0] - 2026-02-28
 
 ### Ajout
